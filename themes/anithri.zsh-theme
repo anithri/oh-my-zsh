@@ -11,7 +11,7 @@ function my_git_prompt_info() {
   ref=$(git symbolic-ref HEAD 2> /dev/null) || return
   topdir=$(git rev-parse --show-toplevel)
   reponame=${topdir##*/}
-  echo "$ZSH_THEME_GIT_PROMPT_PREFIX${reponame}:${ref#refs/heads/}$(parse_git_dirty)$ZSH_THEME_GIT_PROMPT_SUFFIX"
+  echo "$(git_stash_prompt)$ZSH_THEME_GIT_PROMPT_PREFIX${reponame}:${ref#refs/heads/}$(parse_git_dirty)$ZSH_THEME_GIT_PROMPT_SUFFIX"
 }
 
 function my_dir_color() {
@@ -33,6 +33,15 @@ function my_dir_color() {
 function spec_dir() {
   ${%~//~ws\//# }
 }
+
+function git_stash_prompt  {
+  local stash=`expr $(git stash list 2>/dev/null| wc -l)`
+  if [ "$stash" != "0" ]                  
+  then
+    echo "$fg_bold[red]♻$reset_color"
+  fi
+}
+
 
 PROMPT='%{$fg_bold[blue]%}$(my_git_prompt_info) %F{$(my_dir_color)}%~%f
 %{$fg_bold[white]%}%# %{$reset_color%}'
